@@ -1,0 +1,58 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++  <meta charset="UTF-8" />
++  <title>Peptide Activity Predictor</title>
++  <style>
++    body { font-family: Arial, sans-serif; margin: 2rem; }
++    textarea { width: 100%; height: 6rem; }
++    button { margin-top: 1rem; padding: 0.5rem 1rem; }
++    #results { margin-top: 1rem; }
++  </style>
++</head>
++<body>
++  <h1>Peptide Activity Predictor</h1>
++  <p>Enter a peptide sequence to see the expected activities.</p>
++  <textarea id="sequence" placeholder="Enter peptide sequence"></textarea>
++  <br />
++  <button id="predict">Predict Activities</button>
++  <div id="results"></div>
++
++  <script>
++    function predictActivities(seq) {
++      const sequence = seq.toUpperCase().replace(/[^A-Z]/g, '');
++      const activities = [];
++      if (sequence.length === 0) {
++        return ['Please enter a valid sequence'];
++      }
++      const length = sequence.length;
++      const positive = (sequence.match(/[KRH]/g) || []).length;
++      const hydrophobic = (sequence.match(/[AILMFWVY]/g) || []).length;
++
++      if (positive / length > 0.3) {
++        activities.push('Antimicrobial potential');
++      }
++      if (hydrophobic / length > 0.4) {
++        activities.push('Membrane-binding likelihood');
++      }
++      if (length < 8) {
++        activities.push('Short bioactive peptide');
++      }
++      if (activities.length === 0) {
++        activities.push('No activity predicted');
++      }
++      return activities;
++    }
++
++    document.getElementById('predict').addEventListener('click', () => {
++      const seq = document.getElementById('sequence').value;
++      const results = predictActivities(seq);
++      document.getElementById('results').innerHTML = '<ul>' +
++        results.map(r => `<li>${r}</li>`).join('') + '</ul>';
++    });
++  </script>
++</body>
++</html>
+ 
+EOF
+)
