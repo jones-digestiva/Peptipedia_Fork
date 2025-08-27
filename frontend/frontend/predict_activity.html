@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,22 +22,24 @@
   <script>
     function predictActivities(seq) {
       const sequence = seq.toUpperCase().replace(/[^A-Z]/g, '');
-      const activities = [];
       if (sequence.length === 0) {
         return ['Please enter a valid sequence'];
       }
+
       const length = sequence.length;
       const positive = (sequence.match(/[KRH]/g) || []).length;
       const hydrophobic = (sequence.match(/[AILMFWVY]/g) || []).length;
+      const cysteine = (sequence.match(/C/g) || []).length;
+      const activities = [];
 
-      if (positive / length > 0.3) {
-        activities.push('Antimicrobial potential');
+      if (positive / length > 0.15 && hydrophobic / length > 0.2) {
+        activities.push('antimicrobial', 'antibacterial_antibiotic');
       }
-      if (hydrophobic / length > 0.4) {
-        activities.push('Membrane-binding likelihood');
+      if (length <= 50) {
+        activities.push('bioactive');
       }
-      if (length < 8) {
-        activities.push('Short bioactive peptide');
+      if (cysteine / length > 0.1) {
+        activities.push('cell_sensing', 'defense', 'sensorial', 'therapeutic');
       }
       if (activities.length === 0) {
         activities.push('No activity predicted');
@@ -47,12 +50,8 @@
     document.getElementById('predict').addEventListener('click', () => {
       const seq = document.getElementById('sequence').value;
       const results = predictActivities(seq);
-      document.getElementById('results').innerHTML = '<ul>' +
-        results.map(r => `<li>${r}</li>`).join('') + '</ul>';
+      document.getElementById('results').textContent = results.join(';');
     });
   </script>
- </body>
-</html>
- 
-EOF
-)
+</body>
++</html>
